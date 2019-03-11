@@ -3,11 +3,11 @@ import 'antd/dist/antd.css';
 import './App.css';
 import TaskContainer from './Components/TaskContainer/TasksContainer';
 import { Modal, Input, Button } from 'antd';
+import NavigationBar from './Components/NavigationBar/NavigationBar';
 import { connect } from 'react-redux';
 import { addColumn, reorderColumn, reorderColumnTasks } from './Actions';
 import * as R from 'ramda';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-
 
 class App extends Component {
   state = {
@@ -26,7 +26,6 @@ class App extends Component {
     Columns: state.Columns
     */
     //find if column is not empty or doesnt exist before
-
     const largest = R.reduce(R.max, -Infinity, this.props.ColumnOrder) + 1;
     this.props.addColumn(
       R.equals(largest, -Infinity)
@@ -38,7 +37,6 @@ class App extends Component {
     });
 
   }
-
   handleCancel = (e) => {
     console.log(e);
     this.setState({
@@ -56,19 +54,14 @@ class App extends Component {
       newContainerName: e.target.value
     })
   }
-
   /////////////////////////////////////
   onDragEnd = result => {
     const { destination, source, draggableId } = result;
-    console.log('source', source);
-    console.log('dest', destination);
-    console.log('draggableid', draggableId);
+    if (!destination) {
+      return;
+    }
     //In case whole container is moved
     if (source.droppableId === "TasksContainersWrapper" && destination.droppableId === "TasksContainersWrapper") {
-      console.log('fired container moved');
-      if (!destination) {
-        return;
-      }
       if (destination.droppableId === source.droppableId && destination.index === source.index) {
         return;
       }
@@ -80,9 +73,6 @@ class App extends Component {
     }
     //In case items inside the containers are moved
     if (R.includes('tasklist', source.droppableId) || R.includes('tasklist', destination.droppableId)) {
-      if (!destination) {
-        return;
-      }
       //incase drop is in same container and at same place
       if (source.droppableId === destination.droppableId && source.index === destination.index) {
         return;
@@ -104,7 +94,7 @@ class App extends Component {
         this.props.reorderColumnTasks(newColumnArray);
       }
       //source and dest containers of tasks are different
-      else if(source.droppableId !== destination.droppableId){
+      else if (source.droppableId !== destination.droppableId) {
         console.log('between columns drag fired====================')
         const sourceColumn = parseInt(source.droppableId.substring(9, source.droppableId.length));
         const destinationColumn = parseInt(destination.droppableId.substring(9, destination.droppableId.length));
@@ -131,68 +121,49 @@ class App extends Component {
     }
   }
   ////////////////////////////////////
-
   render() {
     return (
-      <div className="parent-container">
-        <button className="add-container-btn" onClick={this.handleAddTaskContainer}><i className="fa fa-plus-square-o" aria-hidden="true"></i></button>
-        <DragDropContext onDragEnd={this.onDragEnd}>
-          <Droppable direction="horizontal" droppableId={'TasksContainersWrapper'} Type={'container'}>
-            {/* making Task Container Wrapper droppable so we can we TaskContainers around */}
-            {provided => (
-              <div className="task-containers-wrapper" ref={provided.innerRef} {...provided.droppableProps}>
-                {this.props.ColumnOrder.map((columnIds, index) => {
-                  const column = R.find(R.propEq('columnId', columnIds))(this.props.Columns);
-                  return (<TaskContainer key={column.columnId} columnId={column.columnId} title={column.columnTitle} taskIds={column.taskIds} createTask={this.createTask} index={index} />);
-                })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-
-        </DragDropContext>
-
-
-        {/*==================== MODAL Code ===========================*/}
-        <div>
-          <Modal
-            title="Task Container"
-            visible={this.state.visible}
-            onCancel={this.handleCancel}
-            footer={[
-              <Button key="Cancel" onClick={this.handleCancel}>Cancel</Button>,
-              <Button key="Create" type="primary" onClick={this.handleOk}>
-                Create
+      <div>
+        <NavigationBar />
+        <div className="parent-container">
+          <button className="add-container-btn" onClick={this.handleAddTaskContainer}><i className="fa fa-plus-square-o" aria-hidden="true"></i></button>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <Droppable direction="horizontal" droppableId={'TasksContainersWrapper'} Type={'container'}>
+              {/* making Task Container Wrapper droppable so we can we TaskContainers around */}
+              {provided => (
+                <div className="task-containers-wrapper" ref={provided.innerRef} {...provided.droppableProps}>
+                  {this.props.ColumnOrder.map((columnIds, index) => {
+                    const column = R.find(R.propEq('columnId', columnIds))(this.props.Columns);
+                    return (<TaskContainer key={column.columnId} columnId={column.columnId} title={column.columnTitle} taskIds={column.taskIds} createTask={this.createTask} index={index} />);
+                  })}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+          {/*==================== MODAL Code ===========================*/}
+          <div>
+            <Modal
+              title="Task Container"
+              visible={this.state.visible}
+              onCancel={this.handleCancel}
+              footer={[
+                <Button key="Cancel" onClick={this.handleCancel}>Cancel</Button>,
+                <Button key="Create" type="primary" onClick={this.handleOk}>
+                  Create
             </Button>,
-            ]}
-          >
-            <p>Task Container Name</p>
-            <Input onChange={this.handleInputChange} value={this.state.newContainerName} />
-          </Modal>
+              ]}
+            >
+              <p>Task Container Name</p>
+              <Input onChange={this.handleInputChange} value={this.state.newContainerName} />
+            </Modal>
+          </div>
         </div>
       </div>
     );
   }
 }
-//   render() {
-//     return (
-//       <DragDropContext onDragEnd={this.onDragEnd}>
-//         <div className="wrapper">
-//           {data.columnOrder.map(colId => {
-//             //individual column data is here
-//             const column = data.columns[colId];
-//             return (
-//               <TaskContainer key={column.id} id={column.id} title={column.title} tasks={column.tasksIds}/>
-//             );
-//           })}
-//         </div>
-//       </DragDropContext>
-//     );
-//   }
-// }
 function mapStateToProps(state) {
-
-  console.log('app map state to props', state);
   return {
     Tasks: state.Tasks,
     ColumnOrder: state.ColumnOrder,

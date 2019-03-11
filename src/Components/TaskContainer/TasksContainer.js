@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './TasksContainer.css';
-import data from '../../data';
 import Task from '../Task/Task';
 import { Modal, Button, Input } from 'antd';
 import { connect } from 'react-redux';
@@ -14,7 +13,6 @@ class TaskContainer extends Component {
     newTaskName: '',
     newTaskDesc: '',
   }
-
   handleCancel = (e) => {
     console.log(e);
     this.setState({
@@ -39,19 +37,11 @@ class TaskContainer extends Component {
         newTaskDesc: e.target.value
       })
     }
-
   }
-
   handleAddTask = (columnId) => {
-    console.log('add task', columnId);
-    console.log('add task state', this.state);
-
     // Find largest task id to assign new id with +1, add to Tasks, add task to its column
-    console.log('Task Container largest tast', this.props.Tasks)
     let taskIdsArray = []; //initializing as empty
-    let addToArray = (task) => taskIdsArray.push(task.taskId);
-    R.map(addToArray, this.props.Tasks);
-    console.log('tasskIdsArrayyy==================',taskIdsArray);
+    R.map((task) => taskIdsArray.push(task.taskId), this.props.Tasks);// 
     const largest = R.reduce(R.max, -Infinity, taskIdsArray) + 1;
     this.props.addTask(
       R.equals(largest, -Infinity)
@@ -64,39 +54,33 @@ class TaskContainer extends Component {
       newTaskDesc: ''
     });
   }
-  tasks = (taskData) => {
-    console.log(taskData);
-    return (
-      <Task key={taskData.id} title={taskData.title} content={taskData.content} />
-    );
-  }
   render() {
     return (
       <div className="tasks-container-with-modal">
-      <Draggable key={`column-${this.props.columnId}`} draggableId={`column-${this.props.columnId}`} index= {this.props.index}>
-      {(provided)=>(
-      <div className="tasks-container" {...provided.draggableProps}  ref={provided.innerRef}>
-        <h3 {...provided.dragHandleProps}>{this.props.title}</h3>
-        <Droppable droppableId={`tasklist-${this.props.columnId}`} type="items">
-        {provided=> (
-        <div className="task-list" ref={provided.innerRef} {...provided.droppableProps}>
-          {
-            this.props.taskIds.map((taskId, index) => {
-              //get data of current task from tasks object
-              const taskData = R.find(R.propEq('taskId', taskId))(this.props.Tasks);
-              return (
-                <Task key={taskData.taskId} taskId = {taskData.taskId} taskTitle={taskData.taskTitle} taskContent={taskData.taskContent} index={index} />
-              );
-            }
-            )
-          }
-          {provided.placeholder}
-          <button className="add-task-btn" onClick={this.handleAddTaskModal}><i className="fa fa-plus-square-o" aria-hidden="true"></i></button>
-        </div>
-        )}
-        </Droppable>
-        </div>
-      )}
+        <Draggable key={`column-${this.props.columnId}`} draggableId={`column-${this.props.columnId}`} index={this.props.index}>
+          {(provided) => (
+            <div className="tasks-container" {...provided.draggableProps} ref={provided.innerRef}>
+              <p className="tasks-container-title" {...provided.dragHandleProps}>{this.props.title}</p>
+              <Droppable droppableId={`tasklist-${this.props.columnId}`} type="items">
+                {provided => (
+                  <div className="task-list" ref={provided.innerRef} {...provided.droppableProps}>
+                    {
+                      this.props.taskIds.map((taskId, index) => {
+                        //get data of current task from tasks object
+                        const taskData = R.find(R.propEq('taskId', taskId))(this.props.Tasks);
+                        return (
+                          <Task key={taskData.taskId} taskId={taskData.taskId} taskTitle={taskData.taskTitle} taskContent={taskData.taskContent} index={index} />
+                        );
+                      }
+                      )
+                    }
+                    {provided.placeholder}
+                    <button className="add-task-btn" onClick={this.handleAddTaskModal}><i className="fa fa-plus-square-o" aria-hidden="true"></i> Add Task</button>
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          )}
         </Draggable>
         {/*=================== MODAL Codel =============== */}
         <div>
@@ -119,32 +103,6 @@ class TaskContainer extends Component {
         </div>
       </div>
     );
-    // return (
-    //   <div className="tasks-container">
-    //     <h3>{this.props.title}</h3>
-    //     {/* 
-    //       this.props.id is column id
-    //     */}
-    //     <Droppable droppableId={this.props.id}>
-    //       {provided =>(
-    //       <div className="task-list" ref={provided.innerRef} {...provided.droppableProps}>
-    //         {
-    //           this.props.tasks.map((taskid, index) => {
-    //             //get data of current task from tasks object
-    //             const taskData = data.tasks[taskid];
-    //             return (
-    //               <Task key={taskData.id} id = {taskData.id} title={taskData.title} content={taskData.content} index={index} />
-    //             );
-    //           }
-    //           )
-    //         }
-    //         {provided.placeholder}
-    //       </div>
-    //       )
-    //       }
-    //     </Droppable>
-    //   </div>
-    // );
   }
 }
 function mapStateToProps(state) {

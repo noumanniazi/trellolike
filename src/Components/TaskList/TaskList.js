@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Task from '../Task/Task';
 import * as R from 'ramda';
-import {Droppable} from 'react-beautiful-dnd';
+import { Droppable } from 'react-beautiful-dnd';
 
 class TaskList extends Component {
   state = {}
@@ -22,12 +22,10 @@ class TaskList extends Component {
 
             }
             {provided.placeholder}
-            
           </div>
         )}
       </Droppable>
     );
   }
 }
-
 export default TaskList;

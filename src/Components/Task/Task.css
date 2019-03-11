@@ -1,6 +1,6 @@
 .task{
-  border: 1px dashed gray;
   padding: 5px 5px;
   margin: 0 0 5px 0;
-  background: lightblue;
+  background: white;
+  border-radius: 5px;
 }

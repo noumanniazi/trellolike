@@ -1,8 +1,14 @@
-
+body{
+  background-color: #017abf; 
+}
+.parent-container{
+  
+  padding: 30px 0px 10px 10px;
+}
 .task-containers-wrapper{
   display: flex;
   flex-direction: row;
-  padding-left: 10px;
+  padding-left: 0px;
 }
 .add-container-btn{
   align-self: flex-end;
@@ -10,14 +16,15 @@
   height: 32px;
   width: 30px;
   font-size: 20px;
-  margin: 5px 0 10px 10px;
+  margin: 0px 0 10px 0px;
   border: none;
-  background-color: dodgerblue;
+  background-color: white;
 }
+
 .add-container-btn:focus{
   outline:0;
 }
 .add-container-btn:hover{
-  background-color: rgb(88, 171, 255);
+  background-color: #e7ecee;
   cursor: pointer;
 }

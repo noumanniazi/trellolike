@@ -7,24 +7,14 @@ class Task extends Component {
   render() {
     return (
       <Draggable draggableId={`task-${this.props.taskId}`} index={this.props.index}>
-      {(provided)=>(
-        <div className="task" {...provided.dragHandleProps} {...provided.draggableProps}  ref={provided.innerRef}>
-          <h4>{this.props.taskTitle}</h4>
-          <p>{this.props.taskContent}</p>
-        </div>
-      )}
+        {(provided) => (
+          <div className="task" {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
+            <h4>{this.props.taskTitle}</h4>
+            <p>{this.props.taskContent}</p>
+          </div>
+        )}
       </Draggable>
     );
-    // return (
-    //   <Draggable draggableId={this.props.id} index= {this.props.index}>
-    //   {(provided)=>(
-    //     <div className="task" {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-    //       <h4>{this.props.title}</h4>
-    //       <p>{this.props.content}</p>
-    //     </div>
-    //   )}
-    //   </Draggable>
-    // );
   }
 }
 
