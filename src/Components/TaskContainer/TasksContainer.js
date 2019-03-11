@@ -14,7 +14,6 @@ class TaskContainer extends Component {
     newTaskDesc: '',
   }
   handleCancel = (e) => {
-    console.log(e);
     this.setState({
       addTaskModalVisible: false,
       newTaskName: '',
@@ -39,15 +38,25 @@ class TaskContainer extends Component {
     }
   }
   handleAddTask = (columnId) => {
-    // Find largest task id to assign new id with +1, add to Tasks, add task to its column
+    if (this.state.newTaskName === '') {
+      alert("Enter Name of the Task");
+      return;
+    }
+    if (this.state.newTaskDesc === '') {
+      alert("Enter Desc of the Task");
+      return;
+    }
+    // To Find largest task id in order to assign new id with +1,
     let taskIdsArray = []; //initializing as empty
     R.map((task) => taskIdsArray.push(task.taskId), this.props.Tasks);// 
     const largest = R.reduce(R.max, -Infinity, taskIdsArray) + 1;
+    //Add Task To the Container
     this.props.addTask(
       R.equals(largest, -Infinity)
         ? 1
         : largest,
       this.state.newTaskName, this.state.newTaskDesc, columnId);
+    //Update the state
     this.setState({
       addTaskModalVisible: false,
       newTaskName: '',

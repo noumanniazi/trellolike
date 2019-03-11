@@ -6,6 +6,7 @@ import { Modal, Input, Button } from 'antd';
 import NavigationBar from './Components/NavigationBar/NavigationBar';
 import { connect } from 'react-redux';
 import { addColumn, reorderColumn, reorderColumnTasks } from './Actions';
+import { rearrangeColumns, rearrangeTasks, moveTask } from './Utils/utils';
 import * as R from 'ramda';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
@@ -15,10 +16,10 @@ class App extends Component {
     newContainerName: '',
   }
   handleOk = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
-    });
+    if(this.state.newContainerName===''){
+      alert("Please enter name of the Container.");
+      return;
+    }
     //Fire an action to add new column/ Task Container
     /*
     Tasks: state.Tasks,
@@ -33,7 +34,8 @@ class App extends Component {
         : largest,
       this.state.newContainerName);
     this.setState({
-      newContainerName: ''
+      newContainerName: '',
+      visible: false,
     });
 
   }
@@ -65,11 +67,8 @@ class App extends Component {
       if (destination.droppableId === source.droppableId && destination.index === source.index) {
         return;
       }
-      const newColumnOrder = Array.from(this.props.ColumnOrder);
-      newColumnOrder.splice(source.index, 1);
-      newColumnOrder.splice(destination.index, 0, parseInt(draggableId.substring(7, draggableId.length)));
       //replace ColumnOrder with newColumnOrder
-      this.props.reorderColumn(newColumnOrder);
+      this.props.reorderColumn(rearrangeColumns(this.props.ColumnOrder, source, destination, draggableId));
     }
     //In case items inside the containers are moved
     if (R.includes('tasklist', source.droppableId) || R.includes('tasklist', destination.droppableId)) {
@@ -80,47 +79,16 @@ class App extends Component {
       //if drop is in same container but different location
       //HERE WE GOOOO..!
       else if (source.droppableId === destination.droppableId) {
-        const columnId = parseInt(source.droppableId.substring(9, source.droppableId.length));
-        const taskId = parseInt(draggableId.substring(5, draggableId.length));
-        //reorder tasks in given columnId
-        const taskIdsArray = R.find(R.propEq('columnId', columnId))(this.props.Columns).taskIds;
-        taskIdsArray.splice(source.index, 1);
-        taskIdsArray.splice(destination.index, 0, taskId);
-        const newColumnArray = R.map(
-          R.when(R.propEq('columnId', columnId), R.assoc('taskIds', taskIdsArray)),
-          this.props.Columns
-        );
         //action to update data in store
-        this.props.reorderColumnTasks(newColumnArray);
+        this.props.reorderColumnTasks(rearrangeTasks(this.props.Columns, source, destination, draggableId));
       }
       //source and dest containers of tasks are different
       else if (source.droppableId !== destination.droppableId) {
-        console.log('between columns drag fired====================')
-        const sourceColumn = parseInt(source.droppableId.substring(9, source.droppableId.length));
-        const destinationColumn = parseInt(destination.droppableId.substring(9, destination.droppableId.length));
-        const taskId = parseInt(draggableId.substring(5, draggableId.length));
-        //Remove the task from one column and add it to another
-        // Removing
-        const sourceColumnTaskIdsArray = R.find(R.propEq('columnId', sourceColumn))(this.props.Columns).taskIds;
-        sourceColumnTaskIdsArray.splice(source.index, 1);
-        const temp = R.map(
-          R.when(R.propEq('columnId', sourceColumn), R.assoc('taskIds', sourceColumnTaskIdsArray)),
-          this.props.Columns
-        )
-        // Adding
-        const destinationColumnTaskIdsArray = R.find(R.propEq('columnId', destinationColumn))(this.props.Columns).taskIds;
-        destinationColumnTaskIdsArray.splice(destination.index, 0, taskId);
-        const newColumnArray = R.map(
-          R.when(R.propEq('columnId', destinationColumn), R.assoc('taskIds', destinationColumnTaskIdsArray)),
-          temp
-        )
         // Update store with new Columns
-        console.log('new Column Array:====================', newColumnArray);
-        this.props.reorderColumnTasks(newColumnArray);
+        this.props.reorderColumnTasks(moveTask(this.props.Columns, source, destination, draggableId));
       }
     }
   }
-  ////////////////////////////////////
   render() {
     return (
       <div>
