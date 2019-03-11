@@ -1,0 +1,28 @@
+.tasks-container-with-modal{
+  width: 30%;
+  margin-right: 15px;
+  
+}
+.tasks-container{
+  width: 100%;
+  padding: 5px 5px;
+  border: 1px solid darkgray;
+}
+.add-task-btn{
+  align-self: top;
+  width: 100%;
+  font-size: 22px;
+  border: none;
+  background-color: dodgerblue;
+}
+.add-task-btn:focus{
+  outline: 0;
+}
+.add-task-btn:hover{
+  background-color: rgb(88, 171, 255);
+  cursor: pointer;
+}
+h3{
+  text-align: center;
+  background-color: aquamarine;
+}
