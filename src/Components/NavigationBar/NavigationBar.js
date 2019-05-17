@@ -9,7 +9,6 @@ const NavigationBar = () => {
         <li>Home</li>
         <li>Contact Us</li>
         <li>About Us</li>
-        <li>Privacy Policy</li>
       </ul>
     </div>
   );

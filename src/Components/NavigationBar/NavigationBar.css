@@ -21,3 +21,8 @@ img{
   font-weight: bold;
   padding: 0px 10px 0px 10px;
 }
+@media(max-width:425px){
+  .navigation-list{
+    font-size: 10px;
+  }
+}

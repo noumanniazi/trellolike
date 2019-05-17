@@ -100,11 +100,13 @@ class App extends Component {
               {/* making Task Container Wrapper droppable so we can we TaskContainers around */}
               {provided => (
                 <div className="task-containers-wrapper" ref={provided.innerRef} {...provided.droppableProps}>
+                <div className="scrollable-wrap">
                   {this.props.ColumnOrder.map((columnIds, index) => {
                     const column = R.find(R.propEq('columnId', columnIds))(this.props.Columns);
                     return (<TaskContainer key={column.columnId} columnId={column.columnId} title={column.columnTitle} taskIds={column.taskIds} createTask={this.createTask} index={index} />);
                   })}
                   {provided.placeholder}
+                  </div>
                 </div>
               )}
             </Droppable>
@@ -132,6 +134,7 @@ class App extends Component {
   }
 }
 function mapStateToProps(state) {
+  console.log('map', state);
   return {
     Tasks: state.Tasks,
     ColumnOrder: state.ColumnOrder,
